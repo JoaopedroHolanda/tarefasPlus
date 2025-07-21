@@ -3,7 +3,7 @@ import styles from './styles.module.css'
 import Head from 'next/head'
 
 import { getSession } from 'next-auth/react'
-import { redirect } from 'next/dist/server/api-utils'
+import { Textarea } from '../../components/textarea'
 
 export default function Dashboard(){
     return(
@@ -12,7 +12,21 @@ export default function Dashboard(){
                 <title>Meu painel de tarrefas</title>
             </Head>
 
-            <h1>Página painel</h1>
+            <main className={styles.main}>
+                <section className={styles.content}>
+                    <div className={styles.contentForm}>
+                        <h1 className={styles.title}>Qual a sua tarefa?</h1>
+                            <form>
+                                <Textarea placeholder='Digite qual a sua tarefa'/>
+                                <div className={styles.checkboxArea}>
+                                    <input type="checkbox" className={styles.checkbox} />
+                                    <label htmlFor="important">Deixar tarefa pública?</label>
+                                </div>
+                                <button type="submit" className={styles.button}>Registrar</button>
+                            </form>
+                    </div>
+                </section>
+            </main>
         </div>
     )
 }
