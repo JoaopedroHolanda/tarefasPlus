@@ -1,9 +1,11 @@
+import { ChangeEvent, FormEvent, useState } from "react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import styles from './styles.module.css'
 import { GetServerSideProps } from "next";
 
 import { db } from '../../services/firebaseConnection'
-import { doc,collection, query, where, getDoc } from "firebase/firestore";
+import { doc,collection, query, where, getDoc, addDoc } from "firebase/firestore";
 import { use } from "react";
 import { Textarea } from "../../components/textarea";
 
@@ -18,6 +20,38 @@ interface TaskProps {
 }
 
 export default function task({ item }: TaskProps) {
+
+    const { data: session } = useSession();
+    const [comment, setComment] = useState('');
+
+    async function handleComment(event: FormEvent) {
+        event.preventDefault();
+
+        if(comment === '' || comment.length < 3){
+            alert('Preencha o campo de comentário corretamente!');
+            return;
+        }
+
+        if(!session?.user?.email || !session?.user?.name) return;
+
+        try{
+            const docRef = await addDoc(collection(db, "comments"), {
+                comment: comment,
+                created: new Date(),
+                user: session?.user?.email,
+                name: session?.user.name,
+                taskId: item?.taskId,
+            })
+
+            setComment('');
+        }catch(error) {
+            console.log(error);
+            alert('Erro ao comentar, tente mais tarde!');
+            setComment('');
+            return;
+        }
+    }
+
     return(
         <div className={styles.container}>
             <Head>
@@ -33,9 +67,16 @@ export default function task({ item }: TaskProps) {
                     <section className={styles.commentsContainer}>
                         <h2>Deixar comentário</h2>
 
-                        <form>
-                            <Textarea placeholder="Escreva seu comentário" />
-                            <button className={styles.button}>Comentar</button>
+                        <form onSubmit={handleComment}>
+                            <Textarea
+                            value={comment}
+                            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => setComment(event.target.value)}
+                            placeholder="Escreva seu comentário" />
+                            <button 
+                            disabled={!session?.user} 
+                            className={styles.button}>
+                                Comentar
+                            </button>
                         </form>
                     </section>
                 </main>
