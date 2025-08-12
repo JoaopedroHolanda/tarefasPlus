@@ -8,6 +8,7 @@ import { db } from '../../services/firebaseConnection'
 import { doc,collection, query, where, getDoc, addDoc, getDocs } from "firebase/firestore";
 
 import { Textarea } from "../../components/textarea";
+import { FaTrash } from "react-icons/fa";
 
 interface TaskProps {
     item: {
@@ -52,6 +53,16 @@ export default function task({ item, allComments }: TaskProps) {
                 name: session?.user.name,
                 taskId: item?.taskId,
             })
+
+            const data = {
+                id: docRef.id,
+                comment: comment,
+                user: session?.user?.email,
+                name: session?.user?.name,
+                taskId: item?.taskId
+            }
+
+            setCommentsList((oldItems) => [...oldItems, data]);
 
             setComment('');
         }catch(error) {
@@ -98,6 +109,14 @@ export default function task({ item, allComments }: TaskProps) {
 
                         {commentsList.map(commentItem => (
                             <article key={commentItem.id} className={styles.comment}>
+                                <div className={styles.headComment}>
+                                    <label className={styles.commentsLabel}>{commentItem.name}</label>
+                                {commentItem.user === session?.user?.email && (
+                                    <button className={styles.buttonTrash}>
+                                        <FaTrash size={18} color="#EA3140" />
+                                    </button>
+                                )}
+                                </div>
                                 <p>{commentItem.comment}</p>
                             </article>
                         ))}
