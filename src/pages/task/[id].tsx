@@ -29,7 +29,7 @@ interface CommentProps{
     name: string;
 }
 
-export default function task({ item, allComments }: TaskProps) {
+export default function Task({ item, allComments }: TaskProps) {
 
     const { data: session } = useSession();
     const [comment, setComment] = useState('');
@@ -93,6 +93,7 @@ export default function task({ item, allComments }: TaskProps) {
         <div className={styles.container}>
             <Head>
                 <title>Detalhes da tarefa</title>
+            </Head>
 
                 <main className={styles.main}>
                     <h1>Tarefa</h1>
@@ -138,7 +139,6 @@ export default function task({ item, allComments }: TaskProps) {
                         ))}
                     </section>
                 </main>
-            </Head>
         </div>
     )
 }
@@ -173,7 +173,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
         }
     }
 
-    if(!snapshot.data()?.public === false){
+    if(snapshot.data()?.public === false){
         return {
             redirect: {
                 destination: '/',
